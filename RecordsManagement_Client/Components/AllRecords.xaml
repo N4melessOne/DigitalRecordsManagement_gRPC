@@ -1,0 +1,71 @@
+﻿<UserControl x:Class="RecordsManagement_Client.Components.AllRecords"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:RecordsManagement_Client.Components"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <DataGrid x:Name="dataGrid"
+              IsReadOnly="True"
+              HorizontalAlignment="Center" 
+              VerticalAlignment="Top" 
+              Background="#636e72"
+              FontSize="20"
+              Foreground="#2d3436"
+              AutoGenerateColumns="False"
+              HorizontalScrollBarVisibility="Auto">
+
+        <DataGrid.Resources>
+            <Style TargetType="{x:Type DataGridColumnHeader}">
+                <Setter Property="Background" Value="#636e72"/>
+                <Setter Property="Foreground" Value="#dfe6e9"/>
+                <Setter Property="FontWeight" Value="SemiBold"/>
+                <Setter Property="BorderThickness" Value="0,0,1,2"/>
+                <Setter Property="BorderBrush" Value="#2d3436"/>
+
+            </Style>
+        </DataGrid.Resources>
+
+        <DataGrid.CellStyle>
+            <Style TargetType="DataGridCell">
+                <Style.Setters>
+                    <Setter Property="Background" Value="#b2bec3"/>
+                </Style.Setters>
+            </Style>
+        </DataGrid.CellStyle>
+
+        <DataGrid.Columns>
+            <DataGridTextColumn Header="ID" Width="*" Binding="{Binding Id}"/>
+            <DataGridTextColumn Header="Performer" Width="5*" Binding="{Binding Performer}"/>
+            <DataGridTextColumn Header="Title" Width="5*" Binding="{Binding Title}"/>
+            <DataGridTextColumn Header="Price" Width="2*" Binding="{Binding Price}"/>
+            <DataGridTextColumn Header="Stock" Width="2*" Binding="{Binding StockCount}"/>
+
+            <DataGridTemplateColumn Header="Delete" Width="2*">
+                <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                        <Button x:Name="btnDeleteRecord"
+                                Content="Delete"
+                                Click="btnDeleteRecord_Click"
+                                Style="{StaticResource mainButtonStyle}"
+                                Template="{StaticResource roundedButton}"/>
+                    </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+
+            <DataGridTemplateColumn Header="Update" Width="2*">
+                <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                        <Button x:Name="btnUpdateRecord"
+                                Content="Update"
+                                Click="btnUpdateRecord_Click"
+                                Style="{StaticResource mainButtonStyle}"
+                                Template="{StaticResource roundedButton}"/>
+                    </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+        </DataGrid.Columns>
+
+    </DataGrid>
+</UserControl>
