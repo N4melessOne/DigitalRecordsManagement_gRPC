@@ -102,5 +102,27 @@ namespace RecordsServiceTest
 
             Assert.AreEqual(expected, actual);
         }
+
+        [TestMethod]
+        public void TestNewRecordWithoutStock()
+        {
+            responseModel expected = new responseModel
+            {
+                Error = 0,
+                Message = "Successfully inserted new record!"
+            };
+
+            var testClient = new RecordsManagementService.RecordsManagementServiceClient(channel);
+
+            NewRecord newRecord = new NewRecord()
+            {
+                Performer = "Like Moths To Flames",
+                Title = "No Eternety in Gold",
+                Price = 12.99
+            };
+            responseModel actual = testClient.AddRecord(newRecord);
+
+            Assert.AreEqual(expected, actual);
+        }
     }
 }
