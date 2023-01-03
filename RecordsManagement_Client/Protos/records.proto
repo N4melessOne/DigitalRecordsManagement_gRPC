@@ -1,0 +1,20 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "RecordsManagement_gRPC";
+
+
+service RecordsManagementService {
+	rpc AllRecords (allRecordsRequest) returns (stream recordModel);
+}
+
+message allRecordsRequest {
+
+}
+
+message recordModel {
+	int32 recordId = 1;
+	string performer = 2;
+	string title = 3;
+	float price = 4;
+	int32 stockCount = 5;
+}
