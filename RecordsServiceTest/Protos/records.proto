@@ -7,6 +7,8 @@ service RecordsManagementService {
 	rpc AllRecords (allRecordsRequest) returns (stream recordModel);
 	rpc GetRecordById (IdOfRecord) returns (recordModel);
 	rpc AddRecord (NewRecord) returns (responseModel);
+	rpc UpdateRecord (UpdateRecordModel) returns (responseModel);
+	rpc DeleteRecord (DeleteRecordModel) returns (responseModel);
 }
 
 message responseModel {
@@ -38,8 +40,13 @@ message NewRecord {
 }
 
 message UpdateRecordModel {
-	optional string performer = 1;
-	optional string title = 2;
-	optional double price = 3;
-	optional int32 stockCount = 4;
+	int32 updateRecordId = 1;
+	optional string performer = 2;
+	optional string title = 3;
+	optional double price = 4;
+	optional int32 stockCount = 5;
+}
+
+message DeleteRecordModel {
+	int32 deleteRecordId = 1;
 }

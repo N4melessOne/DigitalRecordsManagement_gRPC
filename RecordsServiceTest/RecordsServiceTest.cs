@@ -80,6 +80,7 @@ namespace RecordsServiceTest
             Assert.AreEqual(expected.Count, actual.Count);
         }
 
+
         [TestMethod]
         public void TestNewRecord()
         {
@@ -121,6 +122,22 @@ namespace RecordsServiceTest
                 Price = 12.99
             };
             responseModel actual = testClient.AddRecord(newRecord);
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void TestDeleteRecord()
+        {
+            responseModel expected = new responseModel()
+            {
+                Error = 0,
+                Message = "Successfully deleted the record!"
+            };
+
+
+            var testClient = new RecordsManagementService.RecordsManagementServiceClient(channel);
+            responseModel actual = testClient.DeleteRecord(new DeleteRecordModel { DeleteRecordId = 13003 });
 
             Assert.AreEqual(expected, actual);
         }

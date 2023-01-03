@@ -1,5 +1,6 @@
 ﻿using Grpc.Core;
 using System.Data.SqlClient;
+using System.Linq.Expressions;
 
 namespace RecordsManagement_gRPC.Services
 {
@@ -114,13 +115,48 @@ namespace RecordsManagement_gRPC.Services
                     {
                         Console.WriteLine(ex.Message);
                         response.Error = 1;
-                        response.Message = "Insert of new record failed!";
+                        response.Message = "Insert of new record failed!\n" + ex.Message;
                         return Task.FromResult(response);
                     }
                 }
             }
         }
 
+        public override Task<responseModel> DeleteRecord(DeleteRecordModel request, ServerCallContext context)
+        {
+            responseModel response = new responseModel();
 
+            using (SqlConnection connection = RecordsDbConntectionService.GetConnection())
+            {
+
+                string sql = $"DELETE FROM [dbo].Record WHERE Id = {request.DeleteRecordId}";
+                using (SqlCommand command = new SqlCommand(sql, connection))
+                {
+                    try
+                    {
+                        connection.Open();
+                        int affectedRows = command.ExecuteNonQuery();
+                        if (affectedRows > 0)
+                        {
+                            response.Error = 0;
+                            response.Message = "Successfully deleted the record!";
+                        }
+                        else
+                        {
+                            response.Error = 1;
+                            response.Message = "Record deletion failed!";
+                        }
+
+                        return Task.FromResult(response);
+                    }
+                    catch(Exception ex)
+                    {
+                        response.Error = 1;
+                        response.Message = "Record deletion failed!\n" + ex.Message;
+                        return Task.FromResult(response);
+                    }
+                }
+            }
+        }
     }
 }
