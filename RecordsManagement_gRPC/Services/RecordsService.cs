@@ -83,13 +83,19 @@ namespace RecordsManagement_gRPC.Services
 
             using (SqlConnection connection = RecordsDbConntectionService.GetConnection())
             {
-                string sql = $"INSERT INTO [dbo].[Record] (Performer, Title, Price, StockCount) VALUES ('{request.Performer}', '{request.Title}', {request.Price}, {request.StockCount})";
+                string sql = $"INSERT INTO [dbo].[Record] (Performer, Title, Price, StockCount) VALUES " +
+                    $"(@performer, @title, @price, @stockCount)";
 
                 using (SqlCommand command = new SqlCommand(sql, connection))
                 {
                     try
                     {
                         connection.Open();
+                        command.Parameters.Add("@performer", System.Data.SqlDbType.NVarChar).Value = request.Performer;
+                        command.Parameters.Add("@title", System.Data.SqlDbType.NVarChar).Value = request.Title;
+                        command.Parameters.Add("@price", System.Data.SqlDbType.Float).Value = request.Price;
+                        command.Parameters.Add("@stockCount", System.Data.SqlDbType.Int).Value = request.StockCount;
+
                         int affectedRows = command.ExecuteNonQuery();
                         if (affectedRows > 0)
                         {

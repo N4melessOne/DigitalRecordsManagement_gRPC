@@ -36,3 +36,10 @@ message NewRecord {
 	double price = 3;
 	optional int32 stockCount = 4;
 }
+
+message UpdateRecordModel {
+	optional string performer = 1;
+	optional string title = 2;
+	optional double price = 3;
+	optional int32 stockCount = 4;
+}

@@ -95,7 +95,7 @@ namespace RecordsServiceTest
             {
                 Performer = "Like Moths To Flames",
                 Title = "No Eternety in Gold",
-                Price = 12,
+                Price = 12.99,
                 StockCount = 6
             };
             responseModel actual = testClient.AddRecord(newRecord);
