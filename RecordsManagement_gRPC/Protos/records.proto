@@ -6,6 +6,12 @@ option csharp_namespace = "RecordsManagement_gRPC";
 service RecordsManagementService {
 	rpc AllRecords (allRecordsRequest) returns (stream recordModel);
 	rpc GetRecordById (IdOfRecord) returns (recordModel);
+	rpc AddRecord (NewRecord) returns (responseModel);
+}
+
+message responseModel {
+	int32 error = 1;
+	string message =2;
 }
 
 message allRecordsRequest {
@@ -22,4 +28,11 @@ message recordModel {
 
 message IdOfRecord {
 	int32 recordId = 1;
+}
+
+message NewRecord {
+	string performer = 1;
+	string title = 2;
+	double price = 3;
+	optional int32 stockCount = 4;
 }
