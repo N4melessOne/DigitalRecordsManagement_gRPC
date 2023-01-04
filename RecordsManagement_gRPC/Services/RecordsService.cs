@@ -128,33 +128,140 @@ namespace RecordsManagement_gRPC.Services
 
             using (SqlConnection connection = RecordsDbConntectionService.GetConnection())
             {
-
-                string sql = $"DELETE FROM [dbo].Record WHERE Id = {request.DeleteRecordId}";
-                using (SqlCommand command = new SqlCommand(sql, connection))
+                if (IsThereARecordWithId(request.DeleteRecordId, connection))
                 {
-                    try
+                    string sql = $"DELETE FROM [dbo].Record WHERE Id = {request.DeleteRecordId}";
+                    using (SqlCommand command = new SqlCommand(sql, connection))
                     {
-                        connection.Open();
-                        int affectedRows = command.ExecuteNonQuery();
-                        if (affectedRows > 0)
+                        try
                         {
-                            response.Error = 0;
-                            response.Message = "Successfully deleted the record!";
+                            connection.Open();
+                            int affectedRows = command.ExecuteNonQuery();
+                            if (affectedRows > 0)
+                            {
+                                response.Error = 0;
+                                response.Message = "Successfully deleted the record!";
+                            }
+                            else
+                            {
+                                response.Error = 1;
+                                response.Message = "Record deletion failed!";
+                            }
+
+                            return Task.FromResult(response);
                         }
-                        else
+                        catch (Exception ex)
                         {
                             response.Error = 1;
-                            response.Message = "Record deletion failed!";
+                            response.Message = "Record deletion failed!\n" + ex.Message;
+                            return Task.FromResult(response);
                         }
-
-                        return Task.FromResult(response);
                     }
-                    catch(Exception ex)
+                }
+                else
+                {
+                    response.Error = 1;
+                    response.Message = "There is no record in the database with the given id!";
+                    return Task.FromResult(response);
+                }
+            }
+        }
+
+        public override Task<responseModel> UpdateRecord(UpdateRecordModel request, ServerCallContext context)
+        {
+            responseModel response = new responseModel();
+
+            using (SqlConnection connection = RecordsDbConntectionService.GetConnection())
+            {
+                if (IsThereARecordWithId(request.UpdateRecordId, connection))
+                {
+                    //constructing the sql string if any of the attributes changed
+                    if (request.HasPerformer || request.HasTitle || request.HasPrice || request.HasStockCount)
+                    {
+                        string sql = "UPDATE [dbo].Record SET ";
+                        if (request.HasPerformer)
+                            sql += "Performer = @performer, ";
+                        if (request.HasTitle)
+                            sql += "Title = @title, ";
+                        if (request.HasPrice)
+                            sql += "Price = @price, ";
+                        if (request.HasStockCount)
+                            sql += "StockCount = @stockCount ";
+                        sql += "WHERE Id = @updateRecordId";
+                        //because of the validations it can't get through without something to change!
+
+                        using (SqlCommand command = new SqlCommand(sql, connection))
+                        {
+                            try
+                            {
+                                connection.Open();
+                                if (request.HasPerformer)
+                                    command.Parameters.AddWithValue("@performer", request.Performer);
+                                if (request.HasTitle)
+                                    command.Parameters.AddWithValue("@title", request.Title);
+                                if (request.HasPrice)
+                                    command.Parameters.AddWithValue("@price", request.Price);
+                                if (request.HasStockCount)
+                                    command.Parameters.AddWithValue("@stockCount", request.StockCount);
+                                command.Parameters.AddWithValue("@updateRecordId", request.UpdateRecordId);
+
+                                int affectedRows = command.ExecuteNonQuery();
+                                if (affectedRows > 0)
+                                {
+                                    response.Error = 0;
+                                    response.Message = "Record was updated successfully!";
+                                    return Task.FromResult(response);
+                                }
+                                else
+                                {
+                                    response.Error = 1;
+                                    response.Message = "Update of record failed!";
+                                    return Task.FromResult(response);
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine(ex.Message);
+                                response.Error = 1;
+                                response.Message = "Update of record failed!\n" + ex.Message;
+                                return Task.FromResult(response);
+                            }
+                        }
+                    }
+                    else
                     {
                         response.Error = 1;
-                        response.Message = "Record deletion failed!\n" + ex.Message;
+                        response.Message = "There were no changes made to the record!";
                         return Task.FromResult(response);
                     }
+                }
+                else
+                {
+                    response.Error = 1;
+                    response.Message = "There is no record in the database with the given id!";
+                    return Task.FromResult(response);
+                }
+            }
+        }
+        private bool IsThereARecordWithId(int id, SqlConnection connection)
+        {
+            string sql = "SELECT COUNT(*) FROM [dbo].Record WHERE Id = @recordId";
+            using (SqlCommand command = new SqlCommand(sql, connection))
+            {
+                connection.Open();
+
+                command.Parameters.AddWithValue("@recordId", id);
+
+                int count = (int)command.ExecuteScalar();
+                if (count > 0)
+                {
+                    connection.Close();
+                    return true;
+                }
+                else
+                {
+                    connection.Close();
+                    return false;
                 }
             }
         }

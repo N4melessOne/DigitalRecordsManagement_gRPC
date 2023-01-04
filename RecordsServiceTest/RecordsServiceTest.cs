@@ -80,7 +80,7 @@ namespace RecordsServiceTest
             Assert.AreEqual(expected.Count, actual.Count);
         }
 
-
+        
         [TestMethod]
         public void TestNewRecord()
         {
@@ -135,9 +135,65 @@ namespace RecordsServiceTest
                 Message = "Successfully deleted the record!"
             };
 
+            var testClient = new RecordsManagementService.RecordsManagementServiceClient(channel);
+            responseModel actual = testClient.DeleteRecord(new DeleteRecordModel { DeleteRecordId = 14002 });
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void TestDeleteRecordWithNoId()
+        {
+            responseModel expected = new responseModel()
+            {
+                Error = 1,
+                Message = "There is no record in the database with the given id!"
+            };
 
             var testClient = new RecordsManagementService.RecordsManagementServiceClient(channel);
-            responseModel actual = testClient.DeleteRecord(new DeleteRecordModel { DeleteRecordId = 13003 });
+            responseModel actual = testClient.DeleteRecord(new DeleteRecordModel { DeleteRecordId = 13008 });
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void TestUpdateRecord()
+        {
+            responseModel expected = new responseModel()
+            {
+                Error = 0,
+                Message = "Record was updated successfully!"
+            };
+
+
+            var testClient = new RecordsManagementService.RecordsManagementServiceClient(channel);
+            responseModel actual = testClient.UpdateRecord(new UpdateRecordModel 
+            {
+                UpdateRecordId = 14007,
+                Price = 11.99,
+                StockCount = 18
+            });
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void TestUpdateRecordWithNoId()
+        {
+            responseModel expected = new responseModel()
+            {
+                Error = 1,
+                Message = "There is no record in the database with the given id!"
+            };
+
+
+            var testClient = new RecordsManagementService.RecordsManagementServiceClient(channel);
+            responseModel actual = testClient.UpdateRecord(new UpdateRecordModel
+            {
+                UpdateRecordId = 13006,
+                Performer = "Like Nothing",
+                StockCount = 18
+            });
 
             Assert.AreEqual(expected, actual);
         }
