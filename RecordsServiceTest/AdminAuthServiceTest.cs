@@ -54,5 +54,26 @@ namespace RecordsServiceTest
 
             Assert.AreEqual(expected, actual);
         }
+
+        [TestMethod]
+        public void TestUpdateAccount()
+        {
+            ResponseModel expected = new ResponseModel()
+            {
+                Error = 1,
+                Message = "Failed login attempt!"
+            };
+
+            var testClient = new AuthenticationService.AuthenticationServiceClient(channel);
+
+            ResponseModel actual = testClient.ChangeAccDetails(new UpdateAdminModel()
+            {
+                //these should be changed according to the state in the db
+                CurrAdminName = "test",
+                CurrAdminPass = "test_0",
+                NewAdminName = "testy",
+                NewAdminPass = "test_0_0"
+            });
+        }
     }
 }

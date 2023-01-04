@@ -167,6 +167,10 @@ namespace RecordsManagement_gRPC.Services
             }
         }
 
+
+        //KNOWN ISSUE:
+        //Can be dangerous to set the sql string up that way becaues of the ',' characters at the end!
+        //have to figure out a way to do it.
         public override Task<responseModel> UpdateRecord(UpdateRecordModel request, ServerCallContext context)
         {
             responseModel response = new responseModel();

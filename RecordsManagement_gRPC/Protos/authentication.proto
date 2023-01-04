@@ -18,6 +18,8 @@ message AdminModel {
 }
 
 message UpdateAdminModel {
-	optional string AdminName = 1;
-	optional string AdminPass = 2;
+	string currAdminName = 1;
+	string currAdminPass = 2;
+	optional string newAdminName = 3;
+	optional string newAdminPass = 4;
 }
