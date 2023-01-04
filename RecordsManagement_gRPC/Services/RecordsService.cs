@@ -170,7 +170,7 @@ namespace RecordsManagement_gRPC.Services
 
         //KNOWN ISSUE:
         //Can be dangerous to set the sql string up that way becaues of the ',' characters at the end!
-        //have to figure out a way to do it.
+        //FIXED IT by a lot of if-else if cases.
         public override Task<responseModel> UpdateRecord(UpdateRecordModel request, ServerCallContext context)
         {
             responseModel response = new responseModel();
@@ -183,12 +183,18 @@ namespace RecordsManagement_gRPC.Services
                     if (request.HasPerformer || request.HasTitle || request.HasPrice || request.HasStockCount)
                     {
                         string sql = "UPDATE [dbo].Record SET ";
-                        if (request.HasPerformer)
+                        if (request.HasPerformer && (request.HasTitle || request.HasPrice || request.HasStockCount))
                             sql += "Performer = @performer, ";
-                        if (request.HasTitle)
+                        else if (request.HasPerformer)
+                            sql += "Performer = @performer ";
+                        if (request.HasTitle && (request.HasPrice || request.HasStockCount))
                             sql += "Title = @title, ";
-                        if (request.HasPrice)
+                        else if (request.HasTitle)
+                            sql += "Title = @title ";
+                        if (request.HasPrice && request.HasStockCount)
                             sql += "Price = @price, ";
+                        else if (request.HasPrice)
+                            sql += "Price = @price ";
                         if (request.HasStockCount)
                             sql += "StockCount = @stockCount ";
                         sql += "WHERE Id = @updateRecordId";

@@ -54,7 +54,7 @@ namespace RecordsManagement_gRPC.Services
 
         //KNOWN ISSUE:
         //Can be dangerous to set the sql string up that way becaues of the ',' characters at the end!
-        //have to figure out a way to do it.
+        //FIXED IT by a lot of if-else if cases.
         public override Task<ResponseModel> ChangeAccDetails(UpdateAdminModel request, ServerCallContext context)
         {
             ResponseModel response = new ResponseModel();
@@ -68,8 +68,10 @@ namespace RecordsManagement_gRPC.Services
                         try
                         {
                             string sql = "UPDATE [dbo].Admins SET ";
-                            if (request.HasNewAdminName)
+                            if (request.HasNewAdminName && request.HasNewAdminPass)
                                 sql += "AdminName = @adminName, ";
+                            else if (request.HasNewAdminName)
+                                sql += "AdminName = @adminName ";
                             if (request.HasNewAdminPass)
                                 sql += "AdminPass = @adminPass ";
                             sql += $"WHERE AdminName = {request.CurrAdminName} AND AdminPass = {request.CurrAdminPass}";

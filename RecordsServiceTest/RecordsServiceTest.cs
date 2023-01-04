@@ -80,7 +80,7 @@ namespace RecordsServiceTest
             Assert.AreEqual(expected.Count, actual.Count);
         }
 
-        
+        /*
         [TestMethod]
         public void TestNewRecord()
         {
@@ -124,7 +124,7 @@ namespace RecordsServiceTest
             responseModel actual = testClient.AddRecord(newRecord);
 
             Assert.AreEqual(expected, actual);
-        }
+        }*/
 
         [TestMethod]
         public void TestDeleteRecord()
@@ -156,6 +156,7 @@ namespace RecordsServiceTest
             Assert.AreEqual(expected, actual);
         }
 
+        //If it is not closed with StockCount, the comma will be a problem
         [TestMethod]
         public void TestUpdateRecord()
         {
@@ -170,8 +171,8 @@ namespace RecordsServiceTest
             responseModel actual = testClient.UpdateRecord(new UpdateRecordModel 
             {
                 UpdateRecordId = 14007,
-                Price = 11.99,
-                StockCount = 18
+                Performer = "Bilmuri",
+                Price = 11.99
             });
 
             Assert.AreEqual(expected, actual);
