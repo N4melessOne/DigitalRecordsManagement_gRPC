@@ -1,0 +1,23 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "RecordsManagement_gRPC";
+
+service AuthenticationService {
+	rpc Login (AdminModel) returns (ResponseModel);
+	rpc ChangeAccDetails (UpdateAdminModel) returns (ResponseModel);
+}
+
+message ResponseModel {
+	int32 Error = 1;
+	string message = 2;
+}
+
+message AdminModel {
+	string AdminName = 1;
+	string AdminPass = 2;
+}
+
+message UpdateAdminModel {
+	optional string AdminName = 1;
+	optional string AdminPass = 2;
+}
