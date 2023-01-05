@@ -5,6 +5,7 @@ option csharp_namespace = "RecordsManagement_gRPC";
 service AuthenticationService {
 	rpc Login (AdminModel) returns (ResponseModel);
 	rpc ChangeAccDetails (UpdateAdminModel) returns (ResponseModel);
+	rpc Logout (AdminModel) returns (ResponseModel);
 }
 
 message ResponseModel {

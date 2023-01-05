@@ -130,6 +130,28 @@ namespace RecordsManagement_gRPC.Services
             }
         }
 
+        public override Task<ResponseModel> Logout(AdminModel request, ServerCallContext context)
+        {
+            ResponseModel response = new ResponseModel();
+            lock (currentlyLoggedInAdmins)
+            {
+                var loggedInAdmin = currentlyLoggedInAdmins.FirstOrDefault(a => a.AdminName== request.AdminName
+                                                                    && a.AdminPass == request.AdminPass);
+                if (loggedInAdmin == null)
+                {
+                    response.Error = 0;
+                    response.Message = "Successfully logged out!";
+                    currentlyLoggedInAdmins.Remove(loggedInAdmin!);
+                    return Task.FromResult(response);
+                }
+                else
+                {
+                    response.Error = 1;
+                    response.Message = "No admins were logged in with these creditentials!";
+                    return Task.FromResult(response);
+                }
+            }
+        }
 
         private int GetAdminId(string adminName, string adminPass, SqlConnection connection)
         {

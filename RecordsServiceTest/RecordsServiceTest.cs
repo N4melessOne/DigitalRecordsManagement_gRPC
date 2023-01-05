@@ -8,6 +8,17 @@ namespace RecordsServiceTest
     public class RecordsServiceTest
     {
         private static GrpcChannel channel = GrpcChannel.ForAddress("https://localhost:8888");
+        private static AdminModel testAdmin = new AdminModel()
+        {
+            AdminName = "Test",
+            AdminPass = "test_0"
+        };
+
+        public RecordsServiceTest()
+        {
+            var testClient = new AuthenticationService.AuthenticationServiceClient(channel);
+            testClient.Login(testAdmin);
+        }
 
         [TestMethod]
         public void TestConnection()
@@ -80,7 +91,7 @@ namespace RecordsServiceTest
             Assert.AreEqual(expected.Count, actual.Count);
         }
 
-        /*
+        
         [TestMethod]
         public void TestNewRecord()
         {
@@ -97,7 +108,9 @@ namespace RecordsServiceTest
                 Performer = "Like Moths To Flames",
                 Title = "No Eternety in Gold",
                 Price = 12.99,
-                StockCount = 6
+                StockCount = 6,
+                AdminName = testAdmin.AdminName,
+                AdminPass = testAdmin.AdminPass
             };
             responseModel actual = testClient.AddRecord(newRecord);
 
@@ -119,12 +132,14 @@ namespace RecordsServiceTest
             {
                 Performer = "Like Moths To Flames",
                 Title = "No Eternety in Gold",
-                Price = 12.99
+                Price = 12.99,
+                AdminName = testAdmin.AdminName,
+                AdminPass = testAdmin.AdminPass
             };
             responseModel actual = testClient.AddRecord(newRecord);
 
             Assert.AreEqual(expected, actual);
-        }*/
+        }
 
         [TestMethod]
         public void TestDeleteRecord()
@@ -136,7 +151,12 @@ namespace RecordsServiceTest
             };
 
             var testClient = new RecordsManagementService.RecordsManagementServiceClient(channel);
-            responseModel actual = testClient.DeleteRecord(new DeleteRecordModel { DeleteRecordId = 14002 });
+            responseModel actual = testClient.DeleteRecord(new DeleteRecordModel 
+            {
+                DeleteRecordId = 14006,
+                AdminName = testAdmin.AdminName,
+                AdminPass = testAdmin.AdminPass
+            });
 
             Assert.AreEqual(expected, actual);
         }
@@ -168,11 +188,13 @@ namespace RecordsServiceTest
 
 
             var testClient = new RecordsManagementService.RecordsManagementServiceClient(channel);
-            responseModel actual = testClient.UpdateRecord(new UpdateRecordModel 
+            responseModel actual = testClient.UpdateRecord(new UpdateRecordModel
             {
                 UpdateRecordId = 14007,
                 Performer = "Bilmuri",
-                Price = 11.99
+                Price = 11.99,
+                AdminName = testAdmin.AdminName,
+                AdminPass = testAdmin.AdminPass
             });
 
             Assert.AreEqual(expected, actual);
@@ -193,7 +215,9 @@ namespace RecordsServiceTest
             {
                 UpdateRecordId = 13006,
                 Performer = "Like Nothing",
-                StockCount = 18
+                StockCount = 18,
+                AdminName = testAdmin.AdminName,
+                AdminPass = testAdmin.AdminPass
             });
 
             Assert.AreEqual(expected, actual);

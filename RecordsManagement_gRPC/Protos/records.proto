@@ -37,6 +37,8 @@ message NewRecord {
 	string title = 2;
 	double price = 3;
 	optional int32 stockCount = 4;
+	string adminName = 5;
+	string adminPass = 6;
 }
 
 message UpdateRecordModel {
@@ -45,8 +47,12 @@ message UpdateRecordModel {
 	optional string title = 3;
 	optional double price = 4;
 	optional int32 stockCount = 5;
+	string adminName = 6;
+	string adminPass = 7;
 }
 
 message DeleteRecordModel {
 	int32 deleteRecordId = 1;
+	string adminName = 2;
+	string adminPass = 3;
 }
