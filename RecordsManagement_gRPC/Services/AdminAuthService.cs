@@ -1,10 +1,13 @@
 ﻿using Grpc.Core;
 using System.Data.SqlClient;
+using System.Runtime.CompilerServices;
 
 namespace RecordsManagement_gRPC.Services
 {
     public class AdminAuthService : AuthenticationService.AuthenticationServiceBase
     {
+        private static List<AdminModel> currentlyLoggedInAdmins = new List<AdminModel>();
+
         private readonly ILogger<RecordsService> logger;
 
         public AdminAuthService(ILogger<RecordsService> logger)
@@ -19,7 +22,7 @@ namespace RecordsManagement_gRPC.Services
             using (SqlConnection connection = RecordsDbConntectionService.GetConnection())
             {
                 string sql = "SELECT COUNT(*) FROM [dbo].Admins WHERE AdminName = @adminName AND AdminPass = @adminPass";
-                using (SqlCommand command = new SqlCommand(sql, connection)) 
+                using (SqlCommand command = new SqlCommand(sql, connection))
                 {
                     try
                     {
@@ -32,6 +35,15 @@ namespace RecordsManagement_gRPC.Services
                         {
                             response.Error = 0;
                             response.Message = "Successfully logged in!";
+                            lock (currentlyLoggedInAdmins)
+                            {
+                                currentlyLoggedInAdmins.Add(new AdminModel()
+                                {
+                                    AdminName = request.AdminName,
+                                    AdminPass = request.AdminPass,
+                                    //Id = GetAdminId(request.AdminName, request.AdminPass, connection)  
+                                });
+                            }
                             return Task.FromResult(response);
                         }
                         else
@@ -58,7 +70,7 @@ namespace RecordsManagement_gRPC.Services
         public override Task<ResponseModel> ChangeAccDetails(UpdateAdminModel request, ServerCallContext context)
         {
             ResponseModel response = new ResponseModel();
-            
+
             if (request.HasNewAdminName || request.HasNewAdminPass)
             {
                 using (SqlConnection connection = RecordsDbConntectionService.GetConnection())
@@ -83,6 +95,8 @@ namespace RecordsManagement_gRPC.Services
                                 {
                                     response.Error = 0;
                                     response.Message = "Updated account details successfully!";
+                                    ChangeAccDetailsInList(request.CurrAdminName, request.CurrAdminPass,
+                                        request.NewAdminName, request.NewAdminName);
                                     return Task.FromResult(response);
                                 }
                                 else
@@ -117,7 +131,7 @@ namespace RecordsManagement_gRPC.Services
         }
 
 
-        private int GetAdminId(string adminName, string adminPass, SqlConnection connection) 
+        private int GetAdminId(string adminName, string adminPass, SqlConnection connection)
         {
             string sql = "SELECT Id FROM [dbo].Admins WHERE AdminName = @adminName AND AdminPass = @adminPass";
             using (SqlCommand command = new SqlCommand(sql, connection))
@@ -139,6 +153,40 @@ namespace RecordsManagement_gRPC.Services
                 }
             }
         }
-        
+
+        private void ChangeAccDetailsInList(string currAdminName, string currAdminPass,
+            string newAdminName = null!, string newAdminPass = null!)
+        {
+            lock (currentlyLoggedInAdmins)
+            {
+
+                var updateInstance = currentlyLoggedInAdmins.FirstOrDefault(a => a.AdminName == currAdminName
+                                                                        && a.AdminPass == currAdminPass);
+                if (updateInstance != null)
+                {
+                    int indexOfAdmin = currentlyLoggedInAdmins.IndexOf(updateInstance!);
+                    if (newAdminName != null)
+                        currentlyLoggedInAdmins[indexOfAdmin].AdminName = newAdminName;
+                    if (newAdminPass != null)
+                        currentlyLoggedInAdmins[indexOfAdmin].AdminPass = newAdminPass;
+                    return;
+                }
+                else
+                {
+                    throw new Exception("No admin instance were in the list with the given creditentials!");
+                }
+            }
+        }
+
+
+        public static bool AdminAuthentication(string adminName, string adminPass) 
+        {
+            lock (currentlyLoggedInAdmins)
+            {
+                var admin = currentlyLoggedInAdmins.FirstOrDefault(a => a.AdminName == adminName 
+                                                        && a.AdminPass == adminPass);
+                return admin != null;
+            }
+        }
     }
 }

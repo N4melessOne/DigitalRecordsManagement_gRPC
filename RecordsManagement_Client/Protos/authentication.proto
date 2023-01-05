@@ -15,6 +15,7 @@ message ResponseModel {
 message AdminModel {
 	string AdminName = 1;
 	string AdminPass = 2;
+	optional int32 Id = 3; 
 }
 
 message UpdateAdminModel {
