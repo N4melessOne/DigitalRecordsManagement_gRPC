@@ -1,6 +1,5 @@
 ﻿using Grpc.Net.Client;
 using RecordsManagement_Client.Components;
-using RecordsManagement_Client.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
