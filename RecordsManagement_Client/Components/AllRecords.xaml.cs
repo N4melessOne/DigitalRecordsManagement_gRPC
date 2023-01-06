@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -28,9 +29,17 @@ namespace RecordsManagement_Client.Components
             RefreshRecordsGrid();
         }
 
-        private void RefreshRecordsGrid()
+        private async void RefreshRecordsGrid()
         {
-            List<Record> allRecords = null!;//gRPC call!
+            List<Record> allRecords = new List<Record>();
+            /*using (var call = ManagementWindow.recordsClient.AllRecords(new allRecordsRequest()))
+            {
+                while (await call.ResponseStream.MoveNext(new CancellationToken()))
+                {
+                    allRecords.Add(call.ResponseStream.Current);
+                }
+            }*/
+
             dataGrid.ItemsSource = allRecords;
         }
 

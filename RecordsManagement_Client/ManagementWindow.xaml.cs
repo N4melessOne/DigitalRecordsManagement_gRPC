@@ -1,4 +1,5 @@
-﻿using RecordsManagement_Client.Components;
+﻿using Grpc.Net.Client;
+using RecordsManagement_Client.Components;
 using RecordsManagement_Client.Model;
 using System;
 using System.Collections.Generic;
@@ -22,8 +23,10 @@ namespace RecordsManagement_Client
     /// </summary>
     public partial class ManagementWindow : Window
     {
-
-        static internal Admin currentAdmin = null!;
+        internal static AdminModel currentAdmin = null!;
+        internal static GrpcChannel channel = GrpcChannel.ForAddress("https://localhost:8888");
+        internal static AuthenticationService.AuthenticationServiceClient authClient = new AuthenticationService.AuthenticationServiceClient(channel);
+        internal static RecordsManagementService.RecordsManagementServiceClient recordsClient = new RecordsManagementService.RecordsManagementServiceClient(channel);
 
         public ManagementWindow()
         {

@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Grpc.Net.Client;
-using Grpc.Net.ClientFactory;
 using RecordsManagement_gRPC;
 using RecordsManagement_gRPC.Services;
 

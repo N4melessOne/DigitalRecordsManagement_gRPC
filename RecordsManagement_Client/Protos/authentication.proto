@@ -1,6 +1,6 @@
 ﻿syntax = "proto3";
 
-option csharp_namespace = "RecordsManagement_gRPC";
+option csharp_namespace = "RecordsManagement_Client";
 
 service AuthenticationService {
 	rpc Login (AdminModel) returns (ResponseModel);
