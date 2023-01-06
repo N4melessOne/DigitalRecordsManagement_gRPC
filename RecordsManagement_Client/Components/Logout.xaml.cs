@@ -31,6 +31,34 @@ namespace RecordsManagement_Client.Components
                 MessageBoxButton.YesNo, MessageBoxImage.Question);
             if (result == MessageBoxResult.Yes)
             {
+                AdminModel logoutAttempt = new AdminModel()
+                {
+                    AdminName = tbAdmin.Text,
+                    AdminPass = pbAdmin.Password
+                };
+
+                ResponseModel response = null!;
+                try
+                {
+                    response = ManagementWindow.authClient.Logout(logoutAttempt);
+                    if (response != null)
+                    {
+                        if (response.Error == 0)
+                        {
+                            MessageBox.Show($"Successfully logged out!");
+                            ManagementWindow.currentAdmin = logoutAttempt;
+                            return;
+                        }
+                        else
+                            MessageBox.Show("There was an error logging out!\n" + "Server message: " + response.Message);
+                    }
+                    else
+                        MessageBox.Show("No response got back from server!");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Unknown error!\n" + ex.Message);
+                }
                 ManagementWindow.currentAdmin = null!;
             }
             else

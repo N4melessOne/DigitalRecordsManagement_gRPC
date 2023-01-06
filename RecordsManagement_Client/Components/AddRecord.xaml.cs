@@ -38,10 +38,9 @@ namespace RecordsManagement_Client.Components
                 return;
             }
 
-            //this dictionary should be replaced!
-            //Dictionary<string, object> jsonObject = new Dictionary<string, object>();
-            //jsonObject.Add("current_admin_name", ManagementWindow.currentAdmin.AdminName);
-            //jsonObject.Add("current_admin_password", ManagementWindow.currentAdmin.AdminPass);
+            NewRecord recordToInsert = new NewRecord();
+            recordToInsert.AdminName = ManagementWindow.currentAdmin.AdminName;
+            recordToInsert.AdminPass = ManagementWindow.currentAdmin.AdminPass;
 
             //New Performer
             if (string.IsNullOrEmpty(tbNewRecordPerformer.Text))
@@ -56,7 +55,7 @@ namespace RecordsManagement_Client.Components
                 tbNewRecordPerformer.Focus();
                 return;
             }
-            //jsonObject.Add("new_record_performer", tbNewRecordPerformer.Text);
+            recordToInsert.Performer = tbNewRecordPerformer.Text;
 
             //New Title
             if (string.IsNullOrEmpty(tbNewRecordTitle.Text))
@@ -71,7 +70,7 @@ namespace RecordsManagement_Client.Components
                 tbNewRecordPerformer.Focus();
                 return;
             }
-            //jsonObject.Add("new_record_title", tbNewRecordTitle.Text);
+            recordToInsert.Title = tbNewRecordTitle.Text;
 
             //New Price
             if (string.IsNullOrEmpty(tbNewRecordPrice.Text))
@@ -87,8 +86,7 @@ namespace RecordsManagement_Client.Components
                 tbNewRecordPrice.Focus();
                 return;
             }
-
-            //jsonObject.Add("new_record_price", double.Parse(tbNewRecordPrice.Text));
+            recordToInsert.Price = double.Parse(tbNewRecordPrice.Text);
 
             //New Stock(optional)
             if (!string.IsNullOrEmpty(tbNewRecordStock.Text))
@@ -100,19 +98,35 @@ namespace RecordsManagement_Client.Components
                     tbNewRecordStock.Focus();
                     return;
                 }
-                //jsonObject.Add("new_record_stock", int.Parse(tbNewRecordStock.Text));
+                recordToInsert.StockCount = int.Parse(tbNewRecordStock.Text);
             }
             else
-                //jsonObject.Add("new_record_stock", 0);
+                recordToInsert.StockCount = 0;
 
-            //check if all parameters are fulfilled
-            /*if (jsonObject.Count != 6) //6 rows should be in the Dictionary!
-            {
-                MessageBox.Show("Missing Parameters!");
-                return;
-            }*/
 
             //gRPC call
+            responseModel response = null!;
+            try
+            {
+                response = ManagementWindow.recordsClient.AddRecord(recordToInsert);
+                if (response != null)
+                {
+                    if (response.Error == 0)
+                    {
+                        MessageBox.Show($"Successfully inserted a new record!");
+                        return;
+                    }
+                    else
+                        MessageBox.Show("There was an error inserting!\n" + "Server message: " + response.Message);
+                }
+                else
+                    MessageBox.Show("No response got back from server!");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Unknown error!\n" + ex.Message);
+            }
+
 
             tbNewRecordPerformer.Text = "";
             tbNewRecordTitle.Text = "";

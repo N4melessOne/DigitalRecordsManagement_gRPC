@@ -50,67 +50,62 @@ namespace RecordsManagement_Client.Components
         {
             if (!string.IsNullOrEmpty(tbAdmin.Text) || !string.IsNullOrEmpty(pbAdmin.Password))
             {
-                /*
-                Dictionary<string, string> jsonObject = new Dictionary<string, string>();
-                var request = new RestRequest(ManegementWindow.RestURL + "/login.php", Method.Put);
+                UpdateAdminModel adminToUpdate = new UpdateAdminModel();
 
                 //first if all the two is different
-                if (tbAdmin.Text != ManegementWindow.currentAdmin.AdminName &&
-                    pbAdmin.Password != ManegementWindow.currentAdmin.AdminPass)
+                if (tbAdmin.Text != ManagementWindow.currentAdmin.AdminName &&
+                    pbAdmin.Password != ManagementWindow.currentAdmin.AdminPass)
                 {
-                    jsonObject.Add("current_admin_name", ManegementWindow.currentAdmin.AdminName);
-                    jsonObject.Add("current_admin_password", ManegementWindow.currentAdmin.AdminPass);
-                    jsonObject.Add("new_admin_name", tbAdmin.Text);
-                    jsonObject.Add("new_admin_password", pbAdmin.Password);
-                    var json = JsonSerializer.Serialize(jsonObject, typeof(Dictionary<string, string>));
-
-                    request.AddBody(json);
+                    adminToUpdate.CurrAdminName = ManagementWindow.currentAdmin.AdminName;
+                    adminToUpdate.CurrAdminPass = ManagementWindow.currentAdmin.AdminPass;
+                    adminToUpdate.NewAdminName = tbAdmin.Text;
+                    adminToUpdate.NewAdminPass = pbAdmin.Password;
                 }
                 //then if one or the other
-                else if (tbAdmin.Text != ManegementWindow.currentAdmin.AdminName)
+                else if (tbAdmin.Text != ManagementWindow.currentAdmin.AdminName)
                 {
-                    jsonObject.Add("current_admin_name", ManegementWindow.currentAdmin.AdminName);
-                    jsonObject.Add("current_admin_password", ManegementWindow.currentAdmin.AdminPass);
-                    jsonObject.Add("new_admin_name", tbAdmin.Text);
-                    var json = JsonSerializer.Serialize(jsonObject, typeof(Dictionary<string, string>));
-
-                    request.AddBody(json);
+                    adminToUpdate.CurrAdminName = ManagementWindow.currentAdmin.AdminName;
+                    adminToUpdate.CurrAdminPass = ManagementWindow.currentAdmin.AdminPass;
+                    adminToUpdate.NewAdminName = tbAdmin.Text;
                 }
-                else if (pbAdmin.Password != ManegementWindow.currentAdmin.AdminPass)
+                else if (pbAdmin.Password != ManagementWindow.currentAdmin.AdminPass)
                 {
-                    jsonObject.Add("current_admin_name", ManegementWindow.currentAdmin.AdminName);
-                    jsonObject.Add("current_admin_password", ManegementWindow.currentAdmin.AdminPass);
-                    jsonObject.Add("new_admin_password", pbAdmin.Password);
-                    var json = JsonSerializer.Serialize(jsonObject, typeof(Dictionary<string, string>));
-
-                    request.AddBody(json);
+                    adminToUpdate.CurrAdminName = ManagementWindow.currentAdmin.AdminName;
+                    adminToUpdate.CurrAdminPass = ManagementWindow.currentAdmin.AdminPass;
+                    adminToUpdate.NewAdminPass = pbAdmin.Password;
                 }
 
-                var response = ManegementWindow.Client.Put(request);
-
-                if (response.StatusCode != System.Net.HttpStatusCode.OK)
-                    MessageBox.Show(response.StatusDescription);
-                else
+                ResponseModel response = null!;
+                try
                 {
-                    Response responseFromPut = ManegementWindow.Client.Deserialize<Response>(response).Data!;
-                    if (responseFromPut.Error == 0 && responseFromPut.Message == "Updated succsessfully!")
+                    response = ManagementWindow.authClient.ChangeAccDetails(adminToUpdate);
+                    if (response != null)
                     {
-                        ManegementWindow.currentAdmin = new Admin(tbAdmin.Text, pbAdmin.Password);
-                        InitializeFields();
-                        MessageBox.Show(responseFromPut.Message);
+                        if (response.Error == 0)
+                        {
+                            MessageBox.Show($"Successfully updated account details!");
+                            ManagementWindow.currentAdmin = new AdminModel()
+                            {
+                                AdminName = adminToUpdate.NewAdminName,
+                                AdminPass = adminToUpdate.NewAdminPass
+                            };
+                            return;
+                        }
+                        else
+                            MessageBox.Show("There was an error updating account details!\n" + "Server message: " + response.Message);
                     }
                     else
-                    {
-                        MessageBox.Show(responseFromPut.Message);
-                    }
+                        MessageBox.Show("No response got back from server!");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Unknown error!\n" + ex.Message);
                 }
             }
 
 
             else
                 MessageBox.Show("Didn't type in anything to work with!");
-                */
-            }
         }
     }
 }

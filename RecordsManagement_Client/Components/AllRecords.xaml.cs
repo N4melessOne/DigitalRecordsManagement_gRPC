@@ -31,14 +31,14 @@ namespace RecordsManagement_Client.Components
 
         private async void RefreshRecordsGrid()
         {
-            List<Record> allRecords = new List<Record>();
-            /*using (var call = ManagementWindow.recordsClient.AllRecords(new allRecordsRequest()))
+            List<recordModel> allRecords = new List<recordModel>();
+            using (var call = ManagementWindow.recordsClient.AllRecords(new allRecordsRequest()))
             {
                 while (await call.ResponseStream.MoveNext(new CancellationToken()))
                 {
                     allRecords.Add(call.ResponseStream.Current);
                 }
-            }*/
+            }
 
             dataGrid.ItemsSource = allRecords;
         }
@@ -50,19 +50,30 @@ namespace RecordsManagement_Client.Components
                 MessageBox.Show("There is no admin currently logged in!");
                 return;
             }
-            if ((dataGrid.SelectedItem as Record) != null)
+            if ((dataGrid.SelectedItem as recordModel) != null)
             {
                 //gRPC
-                /*if (response.StatusCode != System.Net.HttpStatusCode.OK)
-                    MessageBox.Show(response.StatusDescription);
-                else
+                try
                 {
-                    Record recordFromGet = JsonSerializer.Deserialize<Record>(response.Content!)!;
-                    UpdateRecordView updateRecordView = new UpdateRecordView(recordFromGet);
-                    updateRecordView.ShowDialog();
+                    int updateRecordId = (dataGrid.SelectedItem as recordModel)!.RecordId;
+                    recordModel updateRecord = ManagementWindow.recordsClient.GetRecordById(new IdOfRecord
+                    {
+                        RecordId = updateRecordId
+                    });
+                    if (updateRecord != null)
+                    {
+                        UpdateRecordView updateRecordView = new UpdateRecordView(updateRecord);
+                        updateRecordView.ShowDialog();
 
-                    RefreshRecordsGrid();
-                }*/
+                        RefreshRecordsGrid();
+                    }
+                    else
+                        MessageBox.Show("The selected record is currently not available!");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Other error!\n" + ex.Message);
+                }
             }
             else
                 MessageBox.Show("No records selected!");
@@ -76,38 +87,42 @@ namespace RecordsManagement_Client.Components
                 return;
             }
 
-            if ((dataGrid.SelectedItem as Record) != null)
+            if ((dataGrid.SelectedItem as recordModel) != null)
             {
-                var result = MessageBox.Show($"Are you sure to delete {(dataGrid.SelectedItem as Record)!.Performer} - {(dataGrid.SelectedItem as Record)!.Title}?",
+                var result = MessageBox.Show($"Are you sure to delete {(dataGrid.SelectedItem as recordModel)!.Performer} - {(dataGrid.SelectedItem as recordModel)!.Title}?",
                                     "DELETE", MessageBoxButton.YesNo);
                 if (result == MessageBoxResult.Yes)
                 {
-                    /*
-                    Dictionary<string, object> jsonObject = new Dictionary<string, object>();
-                    jsonObject.Add("current_admin_name", ManegementWindow.currentAdmin!.AdminName);
-                    jsonObject.Add("current_admin_password", ManegementWindow.currentAdmin!.AdminPass);
-                    jsonObject.Add("recordid_to_delete", (dataGrid.SelectedItem as Record)!.Id);
+                    int deleteRecordId = (dataGrid.SelectedItem as recordModel)!.RecordId;
+                    DeleteRecordModel recordToDelete = new DeleteRecordModel();
+                    recordToDelete.AdminName = ManagementWindow.currentAdmin.AdminName;
+                    recordToDelete.AdminPass = ManagementWindow.currentAdmin.AdminPass;
+                    recordToDelete.DeleteRecordId = deleteRecordId;
 
-                    var json = JsonSerializer.Serialize(jsonObject, typeof(Dictionary<string, object>));
-                    request.AddBody(json);
-
-                    var response = ManegementWindow.Client.Delete(request);
-
-                    if (response.StatusCode != System.Net.HttpStatusCode.OK)
-                        MessageBox.Show(response.StatusDescription);
-                    else
+                    //gRPC
+                    responseModel response = null!;
+                    try
                     {
-                        Response responseFromDelete = ManegementWindow.Client.Deserialize<Response>(response).Data!;
-                        if (responseFromDelete.Error == 0 && responseFromDelete.Message == "Deleted successfully!")
+                        response = ManagementWindow.recordsClient.DeleteRecord(recordToDelete);
+                        if (response != null)
                         {
-                            MessageBox.Show(responseFromDelete.Message);
-                            RefreshRecordsGrid();
+                            if (response.Error == 0)
+                            {
+                                MessageBox.Show($"Successfully deleted a record!");
+                                return;
+                            }
+                            else
+                                MessageBox.Show("There was an error deleting!\n" + "Server message: " + response.Message);
                         }
                         else
-                        {
-                            MessageBox.Show(responseFromDelete.Message);
-                        }
-                    }*/
+                            MessageBox.Show("No response got back from server!");
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Unknown error!\n" + ex.Message);
+                    }
+
+                    RefreshRecordsGrid();
                 }
                 else
                     return;

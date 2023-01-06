@@ -28,24 +28,34 @@ namespace RecordsManagement_Client.Components
 
         private void btnLogin_Click(object sender, RoutedEventArgs e)
         {
-            /*
-            var response = ManagementWindow.Client.Post(request);
-
-            if (response.StatusCode != System.Net.HttpStatusCode.OK)
-                MessageBox.Show(response.StatusDescription);
-            else
+            AdminModel loginAttempt = new AdminModel()
             {
-                Response responseFromPost = ManegementWindow.Client.Deserialize<Response>(response).Data!;
-                if (responseFromPost.Error == 0 && responseFromPost.Message == "Succesfully logged in!")
+                AdminName = tbAdmin.Text,
+                AdminPass = pbAdmin.Password
+            };
+
+            ResponseModel response = null!;
+            try
+            {
+                response = ManagementWindow.authClient.Login(loginAttempt);
+                if (response != null)
                 {
-                    ManegementWindow.currentAdmin = new Admin(tbAdmin.Text, pbAdmin.Password);
-                    MessageBox.Show(responseFromPost.Message);
+                    if (response.Error == 0)
+                    {
+                        MessageBox.Show($"Successfully logged in!");
+                        ManagementWindow.currentAdmin = loginAttempt;
+                        return;
+                    }
+                    else
+                        MessageBox.Show("There was an error logging in!\n" + "Server message: " + response.Message);
                 }
                 else
-                {
-                    MessageBox.Show(responseFromPost.Message);
-                }
-            }*/
+                    MessageBox.Show("No response got back from server!");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Unknown error!\n" + ex.Message);
+            }
         }
     }
 }

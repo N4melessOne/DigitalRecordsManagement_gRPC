@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
@@ -22,12 +23,12 @@ namespace RecordsManagement_Client
     /// </summary>
     public partial class UpdateRecordView : Window
     {
-        Record updateRecord = null!;
+        recordModel updateRecord = null!;
         private readonly Regex _regexPrice = new Regex("[^0-9,.-]+");
         private readonly Regex _regexStock = new Regex("[^0-9-]+");
         private readonly Regex _regexEnglishAlphabet = new Regex("[^A-Za-z0-9_.,-]+$");
 
-        public UpdateRecordView(Record recordToUpdate)
+        public UpdateRecordView(recordModel recordToUpdate)
         {
             InitializeComponent();
             this.updateRecord = recordToUpdate;
@@ -42,19 +43,6 @@ namespace RecordsManagement_Client
             this.tbNewRecordStock.Text = updateRecord.StockCount.ToString();
         }
 
-        private Dictionary<string, object> InitializeJsonObject()
-        {
-            if (this.updateRecord != null)
-            {
-                Dictionary<string, object> jsonObject = new Dictionary<string, object>();
-                //gRPC
-
-                return jsonObject;
-            }
-            else
-                return null!;
-        }
-
         private void updateRecordBtn_Click(object sender, RoutedEventArgs e)
         {
             if (ManagementWindow.currentAdmin == null)
@@ -63,7 +51,10 @@ namespace RecordsManagement_Client
                 return;
             }
 
-            Dictionary<string, object> jsonObject = InitializeJsonObject();
+            UpdateRecordModel recordToUpdate = new UpdateRecordModel()
+            {
+                UpdateRecordId = this.updateRecord.RecordId
+            };
 
             //New Performer
             if (string.IsNullOrEmpty(tbNewRecordPerformer.Text))
@@ -81,7 +72,7 @@ namespace RecordsManagement_Client
                     return;
                 }
 
-                jsonObject["new_record_performer"] = tbNewRecordPerformer.Text;
+                recordToUpdate.Performer = tbNewRecordPerformer.Text;
             }
 
             //New Title
@@ -100,7 +91,7 @@ namespace RecordsManagement_Client
                     return;
                 }
 
-                jsonObject["new_record_title"] = tbNewRecordTitle.Text;
+                recordToUpdate.Title = tbNewRecordTitle.Text;
             }
 
             //New Price
@@ -121,14 +112,14 @@ namespace RecordsManagement_Client
                 }
                 //because of the thing mentioned in the AddRecords file, I have to pass a wrongly
                 //parsed number. But this also will be handled by the API
-                jsonObject["new_record_price"] = double.Parse(tbNewRecordPrice.Text);
+                recordToUpdate.Price = double.Parse(tbNewRecordPrice.Text);
             }
 
             //New Stock count
             if (this.updateRecord.StockCount != int.Parse(tbNewRecordStock.Text))
             {
                 if (string.IsNullOrEmpty(tbNewRecordStock.Text))
-                    jsonObject["new_record_stock"] = 0;
+                    recordToUpdate.StockCount = 0;
 
                 if (_regexStock.IsMatch(tbNewRecordStock.Text))
                 {
@@ -138,13 +129,31 @@ namespace RecordsManagement_Client
                     return;
                 }
 
-                jsonObject["new_record_stock"] = int.Parse(tbNewRecordStock.Text);
+                recordToUpdate.StockCount = int.Parse(tbNewRecordStock.Text);
             }
+            recordToUpdate.AdminName = ManagementWindow.currentAdmin.AdminName;
+            recordToUpdate.AdminPass = ManagementWindow.currentAdmin.AdminPass;
 
-            if (jsonObject.Count != 7)
+            responseModel response = null!;
+            try
             {
-                MessageBox.Show("Missing parameters!");
-                return;
+                response = ManagementWindow.recordsClient.UpdateRecord(recordToUpdate);
+                if (response != null)
+                {
+                    if (response.Error == 0)
+                    {
+                        MessageBox.Show($"Successfully updated the record!");
+                        return;
+                    }
+                    else
+                        MessageBox.Show("There was an error updating!\n" + "Server message: " + response.Message);
+                }
+                else
+                    MessageBox.Show("No response got back from server!");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Unknown error!\n" + ex.Message);
             }
 
             this.Close();
