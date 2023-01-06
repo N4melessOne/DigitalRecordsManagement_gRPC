@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RecordsManagement_Client", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RecordsManagement_gRPC", "RecordsManagement_gRPC\RecordsManagement_gRPC.csproj", "{1BAE0664-3B5F-4EE6-B0D7-C4EC4A78E76F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RecordsServiceTest", "RecordsServiceTest\RecordsServiceTest.csproj", "{CB090FD4-D600-4744-860F-E2CCE7CC3B4D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RecordsServiceTest", "RecordsServiceTest\RecordsServiceTest.csproj", "{CB090FD4-D600-4744-860F-E2CCE7CC3B4D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RecordsManagement_Client_Proto", "RecordsManagement_Client_Proto\RecordsManagement_Client_Proto.csproj", "{0C75F325-F07B-4ED8-B9F3-4ADCA8B53267}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,6 +37,10 @@ Global
 		{CB090FD4-D600-4744-860F-E2CCE7CC3B4D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CB090FD4-D600-4744-860F-E2CCE7CC3B4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CB090FD4-D600-4744-860F-E2CCE7CC3B4D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0C75F325-F07B-4ED8-B9F3-4ADCA8B53267}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C75F325-F07B-4ED8-B9F3-4ADCA8B53267}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0C75F325-F07B-4ED8-B9F3-4ADCA8B53267}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0C75F325-F07B-4ED8-B9F3-4ADCA8B53267}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
