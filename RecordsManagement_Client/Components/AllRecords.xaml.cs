@@ -50,6 +50,7 @@ namespace RecordsManagement_Client.Components
                 MessageBox.Show("There is no admin currently logged in!");
                 return;
             }
+
             if ((dataGrid.SelectedItem as recordModel) != null)
             {
                 //gRPC
@@ -109,7 +110,6 @@ namespace RecordsManagement_Client.Components
                             if (response.Error == 0)
                             {
                                 MessageBox.Show($"Successfully deleted a record!");
-                                return;
                             }
                             else
                                 MessageBox.Show("There was an error deleting!\n" + "Server message: " + response.Message);

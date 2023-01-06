@@ -110,8 +110,6 @@ namespace RecordsManagement_Client
                     tbNewRecordPrice.Focus();
                     return;
                 }
-                //because of the thing mentioned in the AddRecords file, I have to pass a wrongly
-                //parsed number. But this also will be handled by the API
                 recordToUpdate.Price = double.Parse(tbNewRecordPrice.Text);
             }
 
@@ -143,7 +141,6 @@ namespace RecordsManagement_Client
                     if (response.Error == 0)
                     {
                         MessageBox.Show($"Successfully updated the record!");
-                        return;
                     }
                     else
                         MessageBox.Show("There was an error updating!\n" + "Server message: " + response.Message);

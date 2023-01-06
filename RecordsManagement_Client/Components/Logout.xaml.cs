@@ -46,7 +46,7 @@ namespace RecordsManagement_Client.Components
                         if (response.Error == 0)
                         {
                             MessageBox.Show($"Successfully logged out!");
-                            ManagementWindow.currentAdmin = logoutAttempt;
+                            ManagementWindow.currentAdmin = null!;
                             return;
                         }
                         else

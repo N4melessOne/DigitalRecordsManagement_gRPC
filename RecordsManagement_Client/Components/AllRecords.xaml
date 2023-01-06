@@ -36,7 +36,7 @@
         </DataGrid.CellStyle>
 
         <DataGrid.Columns>
-            <DataGridTextColumn Header="ID" Width="*" Binding="{Binding Id}"/>
+            <DataGridTextColumn Header="ID" Width="*" Binding="{Binding RecordId}"/>
             <DataGridTextColumn Header="Performer" Width="5*" Binding="{Binding Performer}"/>
             <DataGridTextColumn Header="Title" Width="5*" Binding="{Binding Title}"/>
             <DataGridTextColumn Header="Price" Width="2*" Binding="{Binding Price}"/>
