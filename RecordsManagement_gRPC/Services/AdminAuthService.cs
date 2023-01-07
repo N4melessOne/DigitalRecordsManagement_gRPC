@@ -59,6 +59,10 @@ namespace RecordsManagement_gRPC.Services
                         response.Message = "There were some problems during login process.\n" + ex.Message;
                         return Task.FromResult(response);
                     }
+                    finally
+                    {
+                        connection.Close();
+                    }
                 }
             }
         }
@@ -112,6 +116,10 @@ namespace RecordsManagement_gRPC.Services
                             response.Error = 1;
                             response.Message = "There were no changes made!\n" + ex.Message;
                             return Task.FromResult(response);
+                        }
+                        finally
+                        {
+                            connection.Close();
                         }
                     }
                     else

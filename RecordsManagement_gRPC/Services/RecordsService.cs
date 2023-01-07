@@ -44,6 +44,10 @@ namespace RecordsManagement_gRPC.Services
                     {
                         Console.WriteLine(ex.Message);
                     }
+                    finally
+                    {
+                        connection.Close();
+                    }
                 }
             }
         }
@@ -56,23 +60,36 @@ namespace RecordsManagement_gRPC.Services
 
                 using (SqlCommand command = new SqlCommand(sql, connection))
                 {
-                    connection.Open();
-                    using (SqlDataReader reader = command.ExecuteReader())
+                    try
                     {
-                        bool result = reader.Read();
-                        if (result)
-                        {
-                            recordModel model = new recordModel();
-                            model.RecordId = reader.GetInt32(0);
-                            model.Performer = reader.GetString(1);
-                            model.Title = reader.GetString(2);
-                            model.Price = reader.GetDouble(3);
-                            model.StockCount = reader.GetInt32(4);
 
-                            return Task.FromResult(model);
+                        connection.Open();
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            bool result = reader.Read();
+                            if (result)
+                            {
+                                recordModel model = new recordModel();
+                                model.RecordId = reader.GetInt32(0);
+                                model.Performer = reader.GetString(1);
+                                model.Title = reader.GetString(2);
+                                model.Price = reader.GetDouble(3);
+                                model.StockCount = reader.GetInt32(4);
+
+                                return Task.FromResult(model);
+                            }
+                            else
+                                return null!;
                         }
-                        else
-                            return null!;
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                        return null!;
+                    }
+                    finally
+                    {
+                        connection.Close();
                     }
                 }
             }
@@ -168,6 +185,10 @@ namespace RecordsManagement_gRPC.Services
                                 response.Message = "Record deletion failed!\n" + ex.Message;
                                 return Task.FromResult(response);
                             }
+                            finally
+                            {
+                                connection.Close();
+                            }
                         }
                     }
                     else
@@ -257,6 +278,10 @@ namespace RecordsManagement_gRPC.Services
                                     response.Message = "Update of record failed!\n" + ex.Message;
                                     return Task.FromResult(response);
                                 }
+                                finally
+                                {
+                                    connection.Close();
+                                }
                             }
                         }
                         else
@@ -286,20 +311,32 @@ namespace RecordsManagement_gRPC.Services
             string sql = "SELECT COUNT(*) FROM [dbo].Record WHERE Id = @recordId";
             using (SqlCommand command = new SqlCommand(sql, connection))
             {
-                connection.Open();
-
-                command.Parameters.AddWithValue("@recordId", id);
-
-                int count = (int)command.ExecuteScalar();
-                if (count > 0)
+                try
                 {
-                    connection.Close();
-                    return true;
+                    connection.Open();
+
+                    command.Parameters.AddWithValue("@recordId", id);
+
+                    int count = (int)command.ExecuteScalar();
+                    if (count > 0)
+                    {
+                        connection.Close();
+                        return true;
+                    }
+                    else
+                    {
+                        connection.Close();
+                        return false;
+                    }
                 }
-                else
+                catch (Exception ex) 
+                {
+                    Console.WriteLine(ex.Message);
+                    return false;
+                }
+                finally 
                 {
                     connection.Close();
-                    return false;
                 }
             }
         }
